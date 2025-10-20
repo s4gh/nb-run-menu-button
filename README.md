@@ -14,9 +14,9 @@ See screen shots below.
 
 
 # Screenshots
-By clicking on the button in toolbar you run current projct with selectd profile. 
+By clicking on the button in toolbar you run current projct with selected profile. 
 
-To access "debug" action as well as well as "run currnt fil" and "debug current file" actions use drop down next to the run icon.
+To access "debug" action as well as well as "run current file" and "debug current file" actions use drop down next to the run icon.
 
 ![NetBeans Run and Debug](images/actions.png)
 
