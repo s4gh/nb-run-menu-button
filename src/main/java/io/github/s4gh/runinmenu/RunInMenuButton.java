@@ -21,6 +21,7 @@ import org.netbeans.api.editor.EditorRegistry;
 import org.netbeans.api.project.FileOwnerQuery;
 
 import org.netbeans.api.project.Project;
+import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.api.project.ui.OpenProjects;
 import org.netbeans.spi.project.ActionProvider;
 import org.openide.awt.ActionID;
@@ -54,6 +55,10 @@ import org.openide.util.lookup.Lookups;
 @Messages("CTL_RunInMenuButton=Run")
 public final class RunInMenuButton extends AbstractAction implements Presenter.Toolbar, PropertyChangeListener, org.openide.util.LookupListener {
     
+    private JPopupMenu popup;
+    private JMenuItem runProjectItem;
+    private JMenuItem debugProjectItem;
+    
     private Lookup.Result<Project> selProjects;
     private Lookup.Result<DataObject> selFiles;
     private Project currentProject;
@@ -75,26 +80,26 @@ public final class RunInMenuButton extends AbstractAction implements Presenter.T
         ImageIcon runIcon = ImageUtilities.loadImageIcon("icons/run.svg", false);
         ImageIcon debugIcon = ImageUtilities.loadImageIcon("icons/debug.svg", false);
 
-        JPopupMenu popup = new JPopupMenu();
+        popup = new JPopupMenu();
 
-        JMenuItem runProjectItem = new JMenuItem("Run Project (F6)");
+        runProjectItem = new JMenuItem("Run Project F6");
         runProjectItem.setIcon(runIcon);
         runProjectItem.addActionListener(ev -> runProject(ActionProvider.COMMAND_RUN));
         popup.add(runProjectItem);
 
-        JMenuItem debugProjectItem = new JMenuItem("Debug Project (Ctrl+F5)");
+        debugProjectItem = new JMenuItem("Debug Project Ctrl+F5");
         debugProjectItem.setIcon(debugIcon);
         debugProjectItem.addActionListener(ev -> runProject(ActionProvider.COMMAND_DEBUG));
         popup.add(debugProjectItem);
         
         popup.addSeparator();
              
-        JMenuItem runFileItem = new JMenuItem("Run Current File (Shift+F6)");
+        JMenuItem runFileItem = new JMenuItem("Run Current File Shift+F6");
         runFileItem.setIcon(runIcon);
         runFileItem.addActionListener(ev -> runCurrentFile(ActionProvider.COMMAND_RUN_SINGLE));
         popup.add(runFileItem);
 
-        JMenuItem debugFileItem = new JMenuItem("Debug Current File (Ctrl+Shift+F5)");
+        JMenuItem debugFileItem = new JMenuItem("Debug Current File Ctrl+Shift+F5");
         debugFileItem.setIcon(debugIcon);
         debugFileItem.addActionListener(ev -> runCurrentFile(ActionProvider.COMMAND_DEBUG_SINGLE));
         popup.add(debugFileItem);
@@ -120,6 +125,19 @@ public final class RunInMenuButton extends AbstractAction implements Presenter.T
         paintAsToolbarBackground(btn);
         
         return btn;
+    }
+    
+    private String getCurrentProjctName() {
+        String name = "";
+        if (currentProject != null){
+            name = ProjectUtils.getInformation(currentProject).getDisplayName();
+        }
+        if (name == null) {
+            name = "";
+        } else {
+            name = "(" + name + ")";
+        }
+        return name;
     }
     
     public static Color toolbarBackground() {
@@ -223,9 +241,10 @@ public final class RunInMenuButton extends AbstractAction implements Presenter.T
         }
 
         // Apply if changed
-        if (!Objects.equals(selected, currentProject)) {
+        if (!Objects.equals(selected, currentProject) && selected !=null) {
             currentProject = selected;
-        }
+            updateMenuText();
+        }       
     }
 
     @Override
@@ -236,5 +255,11 @@ public final class RunInMenuButton extends AbstractAction implements Presenter.T
     @Override
     public void resultChanged(LookupEvent le) {
         resolveProjectFromSelection();
+    }
+    
+    private void updateMenuText() {
+        String projectName = getCurrentProjctName();
+        runProjectItem.setText("Run Project " + projectName +"  F6");
+        debugProjectItem.setText("Debug Project " + projectName +"  Ctrl+F5");
     }
 }

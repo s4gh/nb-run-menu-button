@@ -54,7 +54,7 @@ public final class CompactRunProfileAction extends AbstractAction
     // --- Lookups we watch (global selection) ---
     private Lookup.Result<Project> selProjects;
     private Lookup.Result<DataObject> selFiles;
-
+    
     // --- Property listeners ---
     private final PropertyChangeListener openProjectsL = evt -> {
         // also refresh when Main Project changes (fallback case)
@@ -137,7 +137,7 @@ public final class CompactRunProfileAction extends AbstractAction
         }
 
         // Apply if changed
-        if (!Objects.equals(selected, currentProject)) {
+        if (!Objects.equals(selected, currentProject) && selected !=null) {
             currentProject = selected;
             refreshProviderAndUI();
         } else {
